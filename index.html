@@ -1,0 +1,3670 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Cronograma - Sorveteria & Açaí</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Tela de Login */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 30%, #fecfef 70%, #84fab0 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .login-header {
+            margin-bottom: 40px;
+        }
+        
+        .login-header h1 {
+            background: linear-gradient(45deg, #e91e63, #9c27b0, #3f51b5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            from { filter: drop-shadow(0 0 10px rgba(233, 30, 99, 0.3)); }
+            to { filter: drop-shadow(0 0 20px rgba(156, 39, 176, 0.5)); }
+        }
+        
+        .login-header .subtitle {
+            background: linear-gradient(45deg, #9c27b0, #e91e63);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.4em;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .login-options {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .login-btn {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .login-btn.admin {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        
+        .login-btn.funcionario {
+            background: linear-gradient(45deg, #4834d4, #686de0);
+            color: white;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Tela de Senha Admin */
+        .senha-admin-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .senha-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .senha-container h2 {
+            color: #e91e63;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .senha-input {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #e91e63;
+            border-radius: 15px;
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
+            letter-spacing: 3px;
+            outline: none;
+        }
+
+        .senha-input:focus {
+            border-color: #9c27b0;
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.3);
+        }
+
+        .senha-btn {
+            background: linear-gradient(45deg, #e91e63, #9c27b0);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .senha-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(233, 30, 99, 0.4);
+        }
+
+        .senha-erro {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .config-senha {
+            background: rgba(233, 30, 99, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .config-senha h4 {
+            color: #e91e63;
+            margin-top: 0;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 3px solid #e91e63;
+            padding: 0;
+            overflow-y: auto;
+            max-height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar.active {
+            transform: translateX(0);
+        }
+        
+        .tab-navigation {
+            display: flex;
+            background: linear-gradient(45deg, #e91e63, #9c27b0);
+            margin: 0;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 15px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .tab-btn.active {
+            background: white;
+            color: #e91e63;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 3px solid rgba(233, 30, 99, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(233, 30, 99, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 4s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .header h1 {
+            background: linear-gradient(45deg, #e91e63, #9c27b0, #3f51b5, #e91e63);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: gradientText 4s ease infinite;
+            position: relative;
+            z-index: 2;
+        }
+        
+        @keyframes gradientText {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .header input {
+            border: 3px solid #e91e63;
+            padding: 12px 20px;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(248, 249, 250, 0.95);
+            min-width: 350px;
+            border-radius: 15px;
+            margin-top: 15px;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header input:focus {
+            outline: none;
+            border-color: #9c27b0;
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 998;
+        }
+        
+        .user-info .perfil {
+            font-weight: bold;
+            color: #e91e63;
+        }
+        
+        .logout-btn {
+            background: linear-gradient(45deg, #ff4757, #ff3838);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 12px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn.edit-mode {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+        
+        .btn.biblioteca {
+            background: linear-gradient(45deg, #9c88ff, #8c7ae6);
+        }
+        
+        .btn.add-dia {
+            background: linear-gradient(45deg, #00d2d3, #54a0ff);
+        }
+
+        .btn.save-data {
+            background: linear-gradient(45deg, #4caf50, #81c784);
+        }
+
+        .btn.load-data {
+            background: linear-gradient(45deg, #ff9800, #ffb74d);
+        }
+        
+        .folgas {
+            background: linear-gradient(135deg, rgba(255, 154, 158, 0.15), rgba(254, 207, 239, 0.15));
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 3px solid rgba(233, 30, 99, 0.3);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(233, 30, 99, 0.2);
+        }
+        
+        .folgas::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(233, 30, 99, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmerPink 6s infinite;
+        }
+        
+        @keyframes shimmerPink {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .folgas h3 {
+            background: linear-gradient(45deg, #e91e63, #f48fb1, #ec407a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: 0;
+            font-size: 1.4em;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .folgas p {
+            position: relative;
+            z-index: 2;
+            font-size: 1.1em;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+        
+        .dia {
+            margin-bottom: 30px;
+            border: 3px solid rgba(233, 30, 99, 0.3);
+            border-radius: 25px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .dia:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            border-color: rgba(233, 30, 99, 0.5);
+        }
+        
+        .dia-header {
+            background: linear-gradient(135deg, #e91e63, #9c27b0, #3f51b5);
+            background-size: 300% 300%;
+            animation: gradientFlow 6s ease infinite;
+            color: white;
+            padding: 20px;
+            font-weight: bold;
+            font-size: 1.4em;
+            cursor: pointer;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .funcionario {
+            flex: 1;
+            min-width: 200px;
+            margin: 15px;
+            border: 3px solid rgba(233, 30, 99, 0.3);
+            border-radius: 20px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .funcionario::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .funcionario:hover::before {
+            left: 100%;
+        }
+        
+        .funcionario:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-color: rgba(233, 30, 99, 0.6);
+        }
+        
+        .funcionario-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-size: 200% 200%;
+            animation: headerGlow 4s ease infinite;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            border-radius: 17px 17px 0 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .funcionario-header:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .funcionario-header.editando {
+            background: linear-gradient(135deg, #e91e63, #9c27b0);
+            animation: editGlow 2s ease infinite;
+        }
+        
+        @keyframes editGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(233, 30, 99, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(233, 30, 99, 0.8); }
+        }
+        
+        @keyframes headerGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .funcionario.folga .funcionario-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24, #ff9ff3);
+            animation: folgaGlow 3s ease infinite;
+        }
+        
+        @keyframes folgaGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .nome-funcionario {
+            transition: all 0.3s ease;
+            padding: 2px 8px;
+            border-radius: 8px;
+            display: inline-block;
+            position: relative;
+        }
+        
+        .admin-mode .nome-funcionario {
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .admin-mode .nome-funcionario:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .admin-mode .nome-funcionario::after {
+            content: '✏️';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        
+        .admin-mode .nome-funcionario:hover::after {
+            opacity: 1;
+            right: -20px;
+        }
+        
+        .funcionario-header.editando {
+            background: linear-gradient(135deg, #e91e63, #9c27b0) !important;
+            animation: editGlow 2s ease infinite;
+        }
+        
+        @keyframes editGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(233, 30, 99, 0.6); }
+            50% { box-shadow: 0 0 25px rgba(233, 30, 99, 0.9); }
+        }
+        
+        .nome-funcionario-input {
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #e91e63;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            color: #2c3e50;
+            width: 100%;
+            outline: none;
+            animation: inputPulse 2s ease infinite;
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.3);
+        }
+        
+        @keyframes inputPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(233, 30, 99, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(233, 30, 99, 0.6); }
+        }
+        
+        /* Tooltip para modo edição */
+        .edit-mode-tooltip {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9998;
+            animation: tooltipFloat 3s ease infinite;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            max-width: 250px;
+        }
+        
+        @keyframes tooltipFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .edit-mode-tooltip::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 10px solid transparent;
+            border-right-color: #667eea;
+        }
+        
+        .edit-mode-tooltip .close-tooltip {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .funcionarios {
+            display: flex;
+            flex-wrap: wrap;
+            position: relative;
+            padding: 15px;
+        }
+        
+        .tarefas {
+            padding: 15px;
+            min-height: 120px;
+            border: 2px dashed transparent;
+            transition: all 0.3s;
+        }
+        
+        .tarefas.drag-over {
+            border-color: #e91e63;
+            background: rgba(233, 30, 99, 0.1);
+        }
+        
+        .tarefa {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            margin: 8px 0;
+            padding: 12px;
+            border-left: 5px solid #667eea;
+            font-size: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .tarefa::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            transition: width 0.3s ease;
+            z-index: 1;
+        }
+        
+        .tarefa:hover::before {
+            width: 100%;
+        }
+        
+        .tarefa.especial {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 235, 59, 0.15));
+            border-left-color: #ffc107;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(255, 193, 7, 0.3);
+        }
+        
+        .tarefa.especial::before {
+            background: linear-gradient(90deg, rgba(255, 193, 7, 0.2), rgba(255, 235, 59, 0.2));
+        }
+        
+        .tarefa.concluida {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(129, 199, 132, 0.15));
+            border-left-color: #4caf50;
+            opacity: 0.8;
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .tarefa.concluida .tarefa-texto {
+            text-decoration: line-through;
+        }
+        
+        .tarefa:hover {
+            transform: translateX(8px) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border-left-width: 8px;
+        }
+        
+        .tarefa.concluida:hover {
+            transform: translateX(5px) translateY(-1px) scale(0.98);
+        }
+        
+        .tarefa-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #e91e63;
+            transform: scale(1.2);
+            z-index: 2;
+            position: relative;
+        }
+        
+        .tarefa-emoji {
+            font-size: 20px;
+            min-width: 28px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            z-index: 2;
+            position: relative;
+        }
+        
+        .tarefa-texto {
+            flex: 1;
+            font-weight: 500;
+            z-index: 2;
+            position: relative;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+        
+        .add-tarefa, .add-funcionario-dia {
+            background: linear-gradient(45deg, #00d2d3, #54a0ff);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .add-tarefa:hover, .add-funcionario-dia:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .observacoes {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(129, 199, 132, 0.2));
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .observacoes h3 {
+            color: #4caf50;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .toggle-sidebar {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: linear-gradient(45deg, #e91e63, #9c27b0);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 998;
+            transition: all 0.3s;
+            font-size: 20px;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3);
+        }
+        
+        .toggle-sidebar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(233, 30, 99, 0.5);
+        }
+        
+        /* Estilos específicos do sistema de atribuição */
+        .atribuir-form {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid rgba(233, 30, 99, 0.2);
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e91e63;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        
+        .form-group select:focus, .form-group input:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0 0 10px rgba(233, 30, 99, 0.3);
+        }
+        
+        .btn-atribuir {
+            width: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        
+        .btn-atribuir:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .atividade-biblioteca {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(233, 30, 99, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 8px 0;
+            cursor: grab;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+            position: relative;
+        }
+        
+        .atividade-biblioteca:hover {
+            background: rgba(233, 30, 99, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .atividade-texto {
+            flex: 1;
+        }
+        
+        .remove-atividade-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .remove-atividade-btn:hover {
+            background: #ff3838;
+            transform: scale(1.1);
+        }
+        
+        .remove-funcionario {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s;
+        }
+        
+        .remove-funcionario:hover {
+            background: #c0392b;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .admin-mode .remove-funcionario {
+            display: block;
+        }
+        
+        .remove-tarefa {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s;
+            z-index: 3;
+        }
+        
+        .remove-tarefa:hover {
+            background: #c0392b;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .admin-mode .remove-tarefa {
+            display: block;
+        }
+        
+        .stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            backdrop-filter: blur(25px);
+            padding: 25px;
+            border-radius: 25px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            border: none;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmerStats 8s infinite;
+        }
+        
+        @keyframes shimmerStats {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px 0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 2;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stats-item:hover {
+            transform: translateX(8px) scale(1.02);
+            border-bottom-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .stats-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stats-item span:first-child {
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 15px;
+        }
+        
+        .stats-item span:last-child {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 1));
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 14px;
+            animation: numberGlowPro 4s ease infinite;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 45px;
+            text-align: center;
+        }
+        
+        @keyframes numberGlowPro {
+            0%, 100% { 
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 6px 25px rgba(240, 147, 251, 0.5);
+                transform: scale(1.05);
+            }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 25%, #4facfe 50%, #00f2fe 75%, #43e97b 100%);
+            background-size: 300% 300%;
+            animation: progressRainbow 4s ease infinite;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 25px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: progressShineNew 3s ease infinite;
+            border-radius: 25px;
+        }
+        
+        @keyframes progressRainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes progressShineNew {
+            0% { transform: translateX(-100%) scaleX(0.5); }
+            100% { transform: translateX(100%) scaleX(0.5); }
+        }
+        
+        @keyframes progressComplete {
+            0%, 100% { 
+                background: linear-gradient(90deg, #27ae60, #2ecc71, #58d68d);
+                transform: scale(1);
+                box-shadow: 0 2px 10px rgba(39, 174, 96, 0.5);
+            }
+            50% { 
+                background: linear-gradient(90deg, #f1c40f, #f39c12, #e67e22);
+                transform: scale(1.03);
+                box-shadow: 0 4px 20px rgba(241, 196, 15, 0.7);
+            }
+        }
+        
+        /* Permissões de usuário */
+        .admin-only {
+            display: block;
+        }
+        
+        .funcionario-mode .admin-only {
+            display: none !important;
+        }
+        
+        .funcionario-mode .btn {
+            display: none;
+        }
+        
+        .funcionario-mode .sidebar {
+            display: none;
+        }
+        
+        .funcionario-mode .toggle-sidebar {
+            display: none;
+        }
+        
+        .funcionario-mode .controls {
+            display: none;
+        }
+        
+        .funcionario-only {
+            display: none;
+        }
+        
+        .funcionario-mode .funcionario-only {
+            display: block;
+        }
+        
+        /* Instruções para funcionários */
+        .instrucoes-funcionario {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(129, 199, 132, 0.15));
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 3px solid rgba(76, 175, 80, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2);
+        }
+        
+        .instrucoes-funcionario::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(76, 175, 80, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmerGreen 5s infinite;
+        }
+        
+        @keyframes shimmerGreen {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .instrucoes-funcionario h3 {
+            background: linear-gradient(45deg, #4caf50, #81c784, #66bb6a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: 0;
+            font-size: 1.5em;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .instrucoes-funcionario p {
+            position: relative;
+            z-index: 2;
+            font-size: 1.1em;
+            margin: 15px 0;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        /* Status de salvamento */
+        .save-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 999;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .save-status.saving {
+            background: linear-gradient(45deg, #ff9800, #ffb74d);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                position: relative; 
+                transform: translateY(100%);
+                transition: transform 0.3s ease;
+                z-index: 999;
+            }
+            .sidebar.active {
+                transform: translateY(0);
+            }
+            .main-content { padding: 15px; }
+            .funcionarios { flex-direction: column; padding: 10px; }
+            .funcionario { margin: 8px 0; }
+            .login-options { flex-direction: column; }
+            .header h1 { font-size: 2.2em; }
+            .header input { min-width: 250px; }
+            .login-container { padding: 30px; }
+            .login-header h1 { font-size: 2.2em; }
+            .tab-btn { font-size: 12px; padding: 15px 8px; }
+            .toggle-sidebar {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                font-size: 16px;
+                width: 55px;
+                height: 55px;
+            }
+            .dia:hover { transform: none; }
+            .funcionario:hover { transform: none; }
+            .tarefa:hover { transform: translateX(3px); }
+            .quick-add-buttons { flex-direction: column; }
+            .quick-btn { min-width: 100%; margin: 2px 0; }
+            .emoji-grid { justify-content: center; }
+            .custom-add { flex-direction: column; gap: 10px; }
+            .custom-add input, .custom-add select, .custom-add button { width: 100%; }
+            .folgas-actions { flex-direction: column; gap: 10px; }
+            .stats-item { flex-direction: column; text-align: center; gap: 8px; }
+            .stats-item span:last-child { margin-top: 5px; }
+            .folga-item { flex-direction: column; gap: 10px; text-align: center; }
+            .folga-item .remove-folga-btn { width: 100%; }
+            .nome-funcionario-input { font-size: 16px; padding: 12px; }
+            .funcionario-header { padding: 18px 15px; }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+
+        /* Estilos adicionais */
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(0); opacity: 1; }
+            to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .emoji-option {
+            display: inline-block;
+            padding: 5px;
+            margin: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        .emoji-option:hover {
+            background: rgba(233, 30, 99, 0.1);
+            transform: scale(1.1);
+        }
+        .emoji-option.selected {
+            background: rgba(233, 30, 99, 0.2);
+            transform: scale(1.1);
+        }
+        .emoji-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        .quick-add-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .quick-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+        }
+        .quick-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .custom-add {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn-add-custom {
+            background: linear-gradient(45deg, #00d2d3, #54a0ff);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-add-custom:hover {
+            transform: scale(1.05);
+        }
+        .search-atividades input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e91e63;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .categorias-filtro select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e91e63;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            background: white;
+        }
+        .btn-definir-folga, .btn-remover-folga {
+            flex: 1;
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        .btn-remover-folga {
+            background: linear-gradient(45deg, #f44336, #e57373);
+        }
+        .btn-definir-folga:hover, .btn-remover-folga:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .btn-folgas-padrao {
+            background: linear-gradient(45deg, #9c27b0, #ba68c8);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .btn-folgas-padrao:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4);
+        }
+        .folgas-padrao-info {
+            background: rgba(156, 39, 176, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            color: #666;
+            font-size: 12px;
+        }
+        .folgas-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🍦 Sistema de Cronograma</h1>
+                <div class="subtitle">Sorveteria & Açaí</div>
+            </div>
+            
+            <p>Selecione seu tipo de acesso:</p>
+            
+            <div class="login-options">
+                <button class="login-btn admin" onclick="solicitarSenhaAdmin()">
+                    👨‍💼 ADMINISTRADOR
+                    <br><small>Controle Total</small>
+                </button>
+                <button class="login-btn funcionario" onclick="login('funcionario')">
+                    👨‍🍳 FUNCIONÁRIO
+                    <br><small>Marcar Tarefas</small>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Senha Admin -->
+    <div class="senha-admin-screen hidden" id="senhaAdminScreen">
+        <div class="senha-container">
+            <h2>🔐 Acesso Administrador</h2>
+            <p>Digite a senha para continuar:</p>
+            
+            <input type="password" 
+                   id="senhaAdminInput" 
+                   class="senha-input" 
+                   placeholder="Digite a senha..."
+                   maxlength="20"
+                   onkeypress="if(event.key==='Enter') verificarSenhaAdmin()">
+            
+            <div>
+                <button class="senha-btn" onclick="verificarSenhaAdmin()">✅ Entrar</button>
+                <button class="senha-btn" onclick="voltarParaLogin()" style="background: linear-gradient(45deg, #95a5a6, #7f8c8d);">❌ Voltar</button>
+            </div>
+            
+            <div class="senha-erro hidden" id="senhaErro">
+                ⚠️ Senha incorreta! Tente novamente.
+            </div>
+
+            <div class="config-senha">
+                <h4>⚙️ Configurações da Senha</h4>
+                <p style="font-size: 12px; margin: 5px 0;">Senha atual: <span id="senhaAtual">91454542</span></p>
+                
+                <div style="margin-top: 15px;">
+                    <input type="text" id="novaSenhaInput" placeholder="Nova senha..." 
+                           style="width: 100%; padding: 8px; border: 2px solid #e91e63; border-radius: 8px; margin-bottom: 10px;">
+                    <button onclick="alterarSenha()" 
+                            style="background: linear-gradient(45deg, #ff9800, #ffb74d); color: white; border: none; padding: 8px 15px; border-radius: 15px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                        🔄 Alterar Senha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informações do Usuário -->
+    <div class="user-info hidden" id="userInfo">
+        <span class="perfil" id="userPerfil"></span>
+        <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+
+    <!-- Status de Salvamento -->
+    <div class="save-status" id="saveStatus">💾 Dados salvos automaticamente</div>
+
+    <div class="main-content">
+        <!-- Instruções para Funcionários -->
+        <div class="instrucoes-funcionario funcionario-only">
+            <h3>👋 Bem-vindo, Funcionário da Sorveteria!</h3>
+            <p>✅ <strong>Como usar:</strong> Marque as caixinhas ☑️ ao lado das tarefas quando concluí-las</p>
+            <p>🍦 <strong>É simples assim!</strong> Cada checkmark mostra seu progresso</p>
+            <p>📱 <strong>Dica:</strong> Funciona perfeitamente no celular também!</p>
+            <p>💾 <strong>Automático:</strong> Suas marcações são salvas automaticamente!</p>
+        </div>
+
+        <div class="header">
+            <h1>🍦 CRONOGRAMA DE TAREFAS</h1>
+            <p><strong>🏪 Estabelecimento:</strong> <input type="text" id="estabelecimento" placeholder="Nome da sua sorveteria" value="Sorveteria Delícia Tropical" onchange="salvarDados()"></p>
+        </div>
+        
+        <div class="controls admin-only">
+            <button class="btn" id="editBtn" onclick="toggleEditMode()">✏️ Modo Edição</button>
+            <button class="btn biblioteca" onclick="toggleSidebar()">📚 Gerenciar Sistema</button>
+            <button class="btn add-dia" onclick="addDia()">➕ Adicionar Dia</button>
+            <button class="btn" onclick="recriarCronograma()">🔄 Recriar Cronograma</button>
+            <button class="btn save-data" onclick="exportarDados()">💾 Baixar Backup</button>
+            <button class="btn load-data" onclick="document.getElementById('importFile').click()">📂 Carregar Backup</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importarDados(event)">
+            <button class="btn" onclick="exportHTML()">📤 Exportar HTML</button>
+            <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+        </div>
+        
+        <div class="folgas">
+            <h3>🚫 FOLGAS DOS FUNCIONÁRIOS:</h3>
+            <p>👨‍🍳 Lucas: Terça-feira | 👩‍🍳 Maricélia: Segunda-feira | 👩‍🍳 Beatriz: Quarta-feira | 👨‍🍳 Anderson: Quinta-feira</p>
+        </div>
+        
+        <div id="cronograma">
+            <!-- Os dias serão criados pelo JavaScript -->
+        </div>
+        
+        <div class="footer">
+            <p>🍦 <strong>Sorveteria & Açaí</strong> | 📅 Sistema de Cronograma Inteligente | 👨‍💻 Desenvolvido com ❤️</p>
+            <p style="font-size: 12px; color: #999; margin-top: 10px;">💾 Todas as alterações são salvas automaticamente no seu navegador</p>
+        </div>
+    </div>
+
+    <!-- Sidebar com Sistema de Abas (Apenas para Admin) -->
+    <div class="sidebar admin-only" id="sidebar">
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('biblioteca')">📚 Biblioteca</button>
+            <button class="tab-btn" onclick="switchTab('atribuir')">⚡ Atribuir</button>
+            <button class="tab-btn" onclick="switchTab('folgas')">🚫 Gerenciar Folgas</button>
+            <button class="tab-btn" onclick="switchTab('config')">⚙️ Configurações</button>
+        </div>
+        
+        <!-- Aba 1: Biblioteca de Atividades -->
+        <div class="tab-content active" id="tabBiblioteca">
+            <h3>📚 Biblioteca de Atividades</h3>
+            
+            <div class="stats">
+                <div class="stats-item">
+                    <span>📊 Total de Atividades:</span>
+                    <span id="totalAtividades">0</span>
+                </div>
+                <div class="stats-item">
+                    <span>✅ Concluídas Hoje:</span>
+                    <span id="atividadesConcluidas">0</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div class="nova-atividade">
+                <h4 style="color: #e91e63; margin: 0 0 15px 0;">➕ Adicionar Nova Atividade</h4>
+                
+                <div class="quick-add-buttons">
+                    <button class="quick-btn" onclick="adicionarAtividadeRapida('Limpar', '🧹', 'limpeza')">🧹 Limpeza</button>
+                    <button class="quick-btn" onclick="adicionarAtividadeRapida('Preparar', '🍓', 'preparo')">🍓 Preparo</button>
+                    <button class="quick-btn" onclick="adicionarAtividadeRapida('Verificar', '❄️', 'verificacao')">❄️ Verificação</button>
+                    <button class="quick-btn" onclick="adicionarAtividadeRapida('Organizar', '📦', 'organizacao')">📦 Organização</button>
+                </div>
+                
+                <div class="emoji-suggestions">
+                    <span style="font-size: 12px; color: #666;">Emojis sugeridos:</span>
+                    <div class="emoji-grid">
+                        <span class="emoji-option" onclick="selecionarEmoji('🧹')">🧹</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('🍦')">🍦</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('🍓')">🍓</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('❄️')">❄️</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('📦')">📦</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('🥤')">🥤</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('🗑️')">🗑️</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('✨')">✨</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('🍽️')">🍽️</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('🥄')">🥄</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('📝')">📝</span>
+                        <span class="emoji-option" onclick="selecionarEmoji('🌡️')">🌡️</span>
+                    </div>
+                </div>
+                
+                <div class="custom-add">
+                    <input type="text" id="novaAtividadeNome" placeholder="Digite o nome da atividade..." style="flex: 1;">
+                    <input type="text" id="novaAtividadeEmoji" placeholder="🧹" maxlength="2" style="width: 50px; text-align: center;">
+                    <select id="novaAtividadeCategoria" style="width: 120px;">
+                        <option value="limpeza">🧹 Limpeza</option>
+                        <option value="preparo">🍓 Preparo</option>
+                        <option value="especial">🍦 Especial</option>
+                        <option value="verificacao">❄️ Verificação</option>
+                        <option value="organizacao">📦 Organização</option>
+                        <option value="administrativo">📝 Administrativo</option>
+                        <option value="personalizada">⭐ Personalizada</option>
+                    </select>
+                    <button class="btn-add-custom" onclick="adicionarAtividade()">➕</button>
+                </div>
+            </div>
+            
+            <div style="border-top: 2px solid rgba(233, 30, 99, 0.2); margin: 20px 0; padding-top: 20px;">
+                <h4 style="color: #667eea; margin: 0 0 15px 0;">🔍 Buscar & Filtrar Atividades</h4>
+            </div>
+            
+            <div class="search-atividades">
+                <input type="text" id="searchAtividades" placeholder="🔍 Buscar atividades..." onkeyup="filtrarAtividades()">
+            </div>
+            
+            <div class="categorias-filtro">
+                <select id="filtroCategoria" onchange="filtrarAtividades()">
+                    <option value="">📋 Todas as categorias</option>
+                    <option value="limpeza">🧹 Limpeza</option>
+                    <option value="especial">🍦 Especiais</option>
+                    <option value="administrativo">📝 Administrativo</option>
+                    <option value="verificacao">❄️ Verificação</option>
+                    <option value="preparo">🍓 Preparo</option>
+                    <option value="organizacao">📦 Organização</option>
+                    <option value="personalizada">⭐ Personalizadas</option>
+                </select>
+            </div>
+            
+            <div style="background: rgba(102, 126, 234, 0.1); padding: 10px; border-radius: 10px; margin-bottom: 15px;">
+                <p style="margin: 0; font-size: 12px; color: #667eea;">
+                    💡 <strong>Dica:</strong> Arraste as atividades abaixo para os funcionários no cronograma!
+                </p>
+            </div>
+            
+            <div id="bibliotecaAtividades">
+                <!-- Atividades serão adicionadas aqui pelo JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Aba 2: Atribuir Atividades -->
+        <div class="tab-content" id="tabAtribuir">
+            <h3>⚡ Atribuir Atividades</h3>
+            
+            <div class="atribuir-form">
+                <div class="form-group">
+                    <label>👤 Funcionário:</label>
+                    <select id="selectFuncionario">
+                        <option value="">Selecione o funcionário</option>
+                        <option value="LUCAS">👨‍🍳 Lucas</option>
+                        <option value="MARICÉLIA">👩‍🍳 Maricélia</option>
+                        <option value="BEATRIZ">👩‍🍳 Beatriz</option>
+                        <option value="ANDERSON">👨‍🍳 Anderson</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>📅 Dia da Semana:</label>
+                    <select id="selectDia">
+                        <option value="">Selecione o dia</option>
+                        <option value="SEGUNDA-FEIRA">📅 Segunda-feira</option>
+                        <option value="TERÇA-FEIRA">📅 Terça-feira</option>
+                        <option value="QUARTA-FEIRA">📅 Quarta-feira</option>
+                        <option value="QUINTA-FEIRA">📅 Quinta-feira</option>
+                        <option value="SEXTA-FEIRA">📅 Sexta-feira</option>
+                        <option value="SÁBADO">📅 Sábado</option>
+                        <option value="DOMINGO">📅 Domingo</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>📝 Atividade:</label>
+                    <select id="selectAtividade">
+                        <option value="">Selecione a atividade</option>
+                    </select>
+                </div>
+                
+                <button class="btn-atribuir" onclick="atribuirAtividade()">
+                    ⚡ Atribuir Atividade
+                </button>
+                
+                <div class="atribuir-rapido" style="background: rgba(233, 30, 99, 0.1); border-radius: 15px; padding: 15px; margin: 15px 0;">
+                    <h4 style="color: #e91e63; margin-top: 0;">🚀 Atribuição Rápida</h4>
+                    <p style="font-size: 12px; color: #666;">Selecione múltiplas atividades:</p>
+                    
+                    <div class="atividades-checkbox" id="atividadesCheckbox" style="max-height: 150px; overflow-y: auto;">
+                        <!-- Checkboxes das atividades serão gerados aqui -->
+                    </div>
+                    
+                    <button class="btn-atribuir-multiplas" onclick="atribuirMultiplasAtividades()" style="width: 100%; background: linear-gradient(45deg, #00d2d3, #54a0ff); color: white; border: none; padding: 10px; border-radius: 25px; font-weight: bold; cursor: pointer;">
+                        🎯 Atribuir Selecionadas
+                    </button>
+                </div>
+                
+                <div class="historico-atribuicoes" style="background: rgba(76, 175, 80, 0.1); border-radius: 15px; padding: 15px; margin-top: 15px;">
+                    <h4 style="color: #4caf50; margin-top: 0;">📋 Últimas Atribuições</h4>
+                    <div id="historicoAtribuicoes">
+                        <!-- Histórico será mostrado aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba 3: Gerenciar Folgas -->
+        <div class="tab-content" id="tabFolgas">
+            <h3>🚫 Gerenciar Folgas</h3>
+            
+            <div class="folgas-manager">
+                <div class="folgas-info">
+                    <h4>📋 Folgas Atuais:</h4>
+                    <div id="folgasAtuais">
+                        <!-- Folgas atuais serão mostradas aqui -->
+                    </div>
+                </div>
+                
+                <div class="definir-folga">
+                    <h4>✏️ Definir Nova Folga:</h4>
+                    
+                    <div class="form-group">
+                        <label>👤 Funcionário:</label>
+                        <select id="selectFuncionarioFolga">
+                            <option value="">Selecione o funcionário</option>
+                            <option value="LUCAS">👨‍🍳 Lucas</option>
+                            <option value="MARICÉLIA">👩‍🍳 Maricélia</option>
+                            <option value="BEATRIZ">👩‍🍳 Beatriz</option>
+                            <option value="ANDERSON">👨‍🍳 Anderson</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📅 Dia da Folga:</label>
+                        <select id="selectDiaFolga">
+                            <option value="">Selecione o dia</option>
+                            <option value="SEGUNDA-FEIRA">📅 Segunda-feira</option>
+                            <option value="TERÇA-FEIRA">📅 Terça-feira</option>
+                            <option value="QUARTA-FEIRA">📅 Quarta-feira</option>
+                            <option value="QUINTA-FEIRA">📅 Quinta-feira</option>
+                            <option value="SEXTA-FEIRA">📅 Sexta-feira</option>
+                            <option value="SÁBADO">📅 Sábado</option>
+                            <option value="DOMINGO">📅 Domingo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="folgas-actions">
+                        <button class="btn-definir-folga" onclick="definirFolga()">
+                            ✅ Definir Folga
+                        </button>
+                        <button class="btn-remover-folga" onclick="removerFolga()">
+                            ❌ Remover Folga
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="folgas-rapidas">
+                    <h4>🚀 Configuração Rápida:</h4>
+                    <p style="font-size: 12px; color: #666;">Aplique folgas padrão para todos:</p>
+                    
+                    <button class="btn-folgas-padrao" onclick="aplicarFolgasPadrao()">
+                        🔄 Aplicar Folgas Padrão
+                    </button>
+                    
+                    <div class="folgas-padrao-info">
+                        <small>
+                            • Lucas: Terça-feira<br>
+                            • Maricélia: Segunda-feira<br>
+                            • Beatriz: Quarta-feira<br>
+                            • Anderson: Quinta-feira
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba 4: Configurações -->
+        <div class="tab-content" id="tabConfig">
+            <h3>⚙️ Configurações do Sistema</h3>
+            
+            <div class="config-section" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 20px; margin-bottom: 15px;">
+                <h4 style="color: #e91e63; margin-top: 0;">🔐 Segurança</h4>
+                
+                <div class="form-group">
+                    <label>🔑 Senha do Administrador:</label>
+                    <input type="text" id="configSenhaAdmin" placeholder="Digite a nova senha...">
+                    <button class="btn-atribuir" onclick="alterarSenhaConfig()" style="margin-top: 10px;">
+                        🔄 Alterar Senha
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-section" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 20px; margin-bottom: 15px;">
+                <h4 style="color: #667eea; margin-top: 0;">💾 Backup e Restauração</h4>
+                
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+                    Gerencie os dados do sistema de forma segura
+                </p>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-atribuir" onclick="exportarDados()" style="flex: 1; background: linear-gradient(45deg, #4caf50, #81c784);">
+                        📥 Baixar Backup
+                    </button>
+                    <button class="btn-atribuir" onclick="document.getElementById('configImportFile').click()" style="flex: 1; background: linear-gradient(45deg, #ff9800, #ffb74d);">
+                        📤 Carregar Backup
+                    </button>
+                </div>
+                
+                <input type="file" id="configImportFile" accept=".json" style="display: none;" onchange="importarDados(event)">
+                
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px;">
+                    <small style="color: #f57c00;">
+                        ⚠️ <strong>Importante:</strong> Sempre faça backup antes de fazer alterações importantes!
+                    </small>
+                </div>
+            </div>
+
+            <div class="config-section" style="background: rgba(255, 255, 255, 0.9); border-radius: 15px; padding: 20px; margin-bottom: 15px;">
+                <h4 style="color: #9c27b0; margin-top: 0;">🔄 Reset do Sistema</h4>
+                
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+                    Restaure o sistema para as configurações iniciais
+                </p>
+
+                <button class="btn-atribuir" onclick="resetarSistema()" style="background: linear-gradient(45deg, #f44336, #e57373);">
+                    🗑️ Resetar Tudo
+                </button>
+                
+                <div style="margin-top: 10px; padding: 10px; background: rgba(244, 67, 54, 0.1); border-radius: 8px;">
+                    <small style="color: #d32f2f;">
+                        ⚠️ <strong>Atenção:</strong> Esta ação apagará todos os dados salvos permanentemente!
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="toggleSidebar()" style="width: 100%; margin-top: 20px;">✖️ Fechar</button>
+    </div>
+
+    <!-- Botão para abrir/fechar sidebar (Apenas para Admin) -->
+    <button class="toggle-sidebar admin-only" onclick="toggleSidebar()">📚⚡🚫⚙️</button>
+
+    <script>
+        let isEditMode = false;
+        let userType = null; // 'admin' ou 'funcionario'
+        let historicoAtribuicoes = [];
+        let senhaAdmin = '91454542'; // Senha padrão
+        
+        let atividadesPredefinidas = [
+            { nome: "Fazer a lista 6 e 7", emoji: "📝", categoria: "administrativo" },
+            { nome: "Limpar cozinha", emoji: "🧹", categoria: "limpeza" },
+            { nome: "Limpar banheiro", emoji: "🚿", categoria: "limpeza" },
+            { nome: "Encher creme e açaí", emoji: "🍦", categoria: "especial" },
+            { nome: "Verificar freezers e fechamento", emoji: "❄️", categoria: "verificacao" },
+            { nome: "Limpar a 2ª cozinha", emoji: "🧽", categoria: "limpeza" },
+            { nome: "Limpar o salão", emoji: "🪣", categoria: "limpeza" },
+            { nome: "Limpar o self-service", emoji: "🍽️", categoria: "limpeza" },
+            { nome: "Lavar colheres e acrílico", emoji: "🥄", categoria: "limpeza" },
+            { nome: "Limpar máquina de sorvete", emoji: "🍨", categoria: "limpeza" },
+            { nome: "Limpar morango", emoji: "🍓", categoria: "preparo" },
+            { nome: "Retirar colher do self-service", emoji: "🥄", categoria: "organizacao" },
+            { nome: "Retirar o lixo", emoji: "🗑️", categoria: "limpeza" },
+            { nome: "Organizar estoque", emoji: "📦", categoria: "organizacao" },
+            { nome: "Conferir temperatura", emoji: "🌡️", categoria: "verificacao" },
+            { nome: "Repor ingredientes", emoji: "🥣", categoria: "preparo" },
+            { nome: "Limpar balcão", emoji: "✨", categoria: "limpeza" },
+            { nome: "Organizar cardápio", emoji: "📋", categoria: "administrativo" },
+            { nome: "Verificar validade produtos", emoji: "📅", categoria: "verificacao" },
+            { nome: "Preparar smoothies", emoji: "🥤", categoria: "preparo" },
+            { nome: "Preparar vitaminas", emoji: "🥤", categoria: "preparo" },
+            { nome: "Cortar frutas", emoji: "🍍", categoria: "preparo" },
+            { nome: "Limpar máquina de vitamina", emoji: "🧽", categoria: "limpeza" },
+            { nome: "Organizar topping bar", emoji: "🍓", categoria: "organizacao" },
+            { nome: "Conferir estoque de potes", emoji: "🥤", categoria: "verificacao" }
+        ];
+
+        const diasSemana = [
+            "SEGUNDA-FEIRA", "TERÇA-FEIRA", "QUARTA-FEIRA", 
+            "QUINTA-FEIRA", "SEXTA-FEIRA", "SÁBADO", "DOMINGO"
+        ];
+
+        let funcionarios = ["LUCAS", "MARICÉLIA", "BEATRIZ", "ANDERSON"];
+        let folgasPorDia = {
+            "SEGUNDA-FEIRA": ["MARICÉLIA"],
+            "TERÇA-FEIRA": ["LUCAS"],
+            "QUARTA-FEIRA": ["BEATRIZ"],
+            "QUINTA-FEIRA": ["ANDERSON"],
+            "SEXTA-FEIRA": [],
+            "SÁBADO": [],
+            "DOMINGO": []
+        };
+
+        // =================== SISTEMA DE PERSISTÊNCIA ===================
+        
+        function salvarDados() {
+            try {
+                mostrarStatusSalvamento('saving');
+                
+                const dados = {
+                    atividadesPredefinidas: atividadesPredefinidas,
+                    funcionarios: funcionarios,
+                    folgasPorDia: folgasPorDia,
+                    historicoAtribuicoes: historicoAtribuicoes,
+                    senhaAdmin: senhaAdmin,
+                    estabelecimento: document.getElementById('estabelecimento')?.value || 'Sorveteria Delícia Tropical',
+                    cronograma: capturarEstadoCronograma(),
+                    ultimoSalvamento: new Date().toISOString()
+                };
+                
+                localStorage.setItem('cronogramaSorveteria', JSON.stringify(dados));
+                
+                setTimeout(() => {
+                    mostrarStatusSalvamento('saved');
+                }, 500);
+                
+            } catch (error) {
+                console.error('Erro ao salvar dados:', error);
+                mostrarStatusSalvamento('error');
+            }
+        }
+
+        function carregarDados() {
+            try {
+                const dados = localStorage.getItem('cronogramaSorveteria');
+                if (dados) {
+                    const dadosObj = JSON.parse(dados);
+                    
+                    if (dadosObj.atividadesPredefinidas) atividadesPredefinidas = dadosObj.atividadesPredefinidas;
+                    if (dadosObj.funcionarios) funcionarios = dadosObj.funcionarios;
+                    if (dadosObj.folgasPorDia) folgasPorDia = dadosObj.folgasPorDia;
+                    if (dadosObj.historicoAtribuicoes) historicoAtribuicoes = dadosObj.historicoAtribuicoes;
+                    if (dadosObj.senhaAdmin) senhaAdmin = dadosObj.senhaAdmin;
+                    if (dadosObj.estabelecimento) {
+                        const estabInput = document.getElementById('estabelecimento');
+                        if (estabInput) estabInput.value = dadosObj.estabelecimento;
+                    }
+                    
+                    console.log('✅ Dados carregados do localStorage');
+                    return dadosObj;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+            return null;
+        }
+
+        function capturarEstadoCronograma() {
+            const cronograma = {};
+            
+            document.querySelectorAll('.dia').forEach(diaEl => {
+                const nomeDia = diaEl.querySelector('.dia-header span').textContent.trim();
+                cronograma[nomeDia] = {};
+                
+                diaEl.querySelectorAll('.funcionario').forEach(funcEl => {
+                    const nomeFuncionario = funcEl.querySelector('.nome-funcionario').textContent.trim();
+                    const tarefas = [];
+                    
+                    funcEl.querySelectorAll('.tarefa').forEach(tarefaEl => {
+                        const texto = tarefaEl.querySelector('.tarefa-texto').textContent;
+                        const emoji = tarefaEl.querySelector('.tarefa-emoji').textContent;
+                        const concluida = tarefaEl.querySelector('.tarefa-checkbox').checked;
+                        const especial = tarefaEl.classList.contains('especial');
+                        
+                        tarefas.push({ texto, emoji, concluida, especial });
+                    });
+                    
+                    cronograma[nomeDia][nomeFuncionario] = {
+                        tarefas: tarefas,
+                        folga: funcEl.classList.contains('folga')
+                    };
+                });
+            });
+            
+            return cronograma;
+        }
+
+        function aplicarEstadoCronograma(cronograma) {
+            if (!cronograma) return;
+            
+            Object.keys(cronograma).forEach(nomeDia => {
+                const diaEl = Array.from(document.querySelectorAll('.dia')).find(el => 
+                    el.querySelector('.dia-header span').textContent.trim() === nomeDia
+                );
+                
+                if (diaEl) {
+                    Object.keys(cronograma[nomeDia]).forEach(nomeFuncionario => {
+                        const funcEl = Array.from(diaEl.querySelectorAll('.funcionario')).find(el => 
+                            el.querySelector('.nome-funcionario').textContent.trim() === nomeFuncionario
+                        );
+                        
+                        if (funcEl) {
+                            const dadosFuncionario = cronograma[nomeDia][nomeFuncionario];
+                            const tarefasContainer = funcEl.querySelector('.tarefas');
+                            
+                            // Limpar tarefas existentes
+                            tarefasContainer.querySelectorAll('.tarefa').forEach(el => el.remove());
+                            
+                            // Adicionar tarefas salvas
+                            dadosFuncionario.tarefas.forEach(tarefa => {
+                                const tarefaEl = criarTarefaElement(tarefa.texto, tarefa.emoji, tarefa.especial);
+                                if (tarefa.concluida) {
+                                    tarefaEl.classList.add('concluida');
+                                    tarefaEl.querySelector('.tarefa-checkbox').checked = true;
+                                }
+                                
+                                const addButton = tarefasContainer.querySelector('.add-tarefa');
+                                if (addButton) {
+                                    tarefasContainer.insertBefore(tarefaEl, addButton);
+                                } else {
+                                    tarefasContainer.appendChild(tarefaEl);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function mostrarStatusSalvamento(status) {
+            const statusEl = document.getElementById('saveStatus');
+            if (!statusEl) return;
+            
+            statusEl.className = 'save-status';
+            
+            switch (status) {
+                case 'saving':
+                    statusEl.className += ' saving';
+                    statusEl.textContent = '💾 Salvando...';
+                    break;
+                case 'saved':
+                    statusEl.textContent = '✅ Dados salvos!';
+                    break;
+                case 'error':
+                    statusEl.style.background = 'linear-gradient(45deg, #f44336, #e57373)';
+                    statusEl.textContent = '❌ Erro ao salvar';
+                    break;
+            }
+        }
+
+        function exportarDados() {
+            const dados = {
+                atividadesPredefinidas: atividadesPredefinidas,
+                funcionarios: funcionarios,
+                folgasPorDia: folgasPorDia,
+                historicoAtribuicoes: historicoAtribuicoes,
+                estabelecimento: document.getElementById('estabelecimento')?.value || 'Sorveteria Delícia Tropical',
+                cronograma: capturarEstadoCronograma(),
+                dataExportacao: new Date().toISOString(),
+                versao: '2.0'
+            };
+            
+            const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `cronograma-backup-${new Date().toISOString().split('T')[0]}.json`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            
+            mostrarAlertaSucesso('📥 Backup baixado com sucesso!');
+        }
+
+        function importarDados(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!confirm('⚠️ Importar dados substituirá todas as configurações atuais. Continuar?')) {
+                event.target.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    
+                    if (dados.atividadesPredefinidas) atividadesPredefinidas = dados.atividadesPredefinidas;
+                    if (dados.funcionarios) funcionarios = dados.funcionarios;
+                    if (dados.folgasPorDia) folgasPorDia = dados.folgasPorDia;
+                    if (dados.historicoAtribuicoes) historicoAtribuicoes = dados.historicoAtribuicoes;
+                    if (dados.estabelecimento) {
+                        const estabInput = document.getElementById('estabelecimento');
+                        if (estabInput) estabInput.value = dados.estabelecimento;
+                    }
+                    
+                    // Recriar interface
+                    criarCronogramaInicial();
+                    if (userType === 'admin') {
+                        carregarBibliotecaAtividades();
+                        carregarAtividadesSelect();
+                        carregarAtividadesCheckbox();
+                        atualizarHistoricoAtribuicoes();
+                        atualizarFolgasAtuais();
+                    }
+                    
+                    // Aplicar estado do cronograma se existir
+                    if (dados.cronograma) {
+                        setTimeout(() => {
+                            aplicarEstadoCronograma(dados.cronograma);
+                            atualizarEstatisticas();
+                        }, 100);
+                    }
+                    
+                    atualizarTextoFolgas();
+                    salvarDados();
+                    
+                    mostrarAlertaSucesso('✅ Dados importados com sucesso!');
+                    
+                } catch (error) {
+                    console.error('Erro ao importar:', error);
+                    alert('❌ Erro ao importar dados. Verifique se o arquivo é válido.');
+                }
+                
+                event.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function resetarSistema() {
+            if (!confirm('⚠️ ATENÇÃO: Esta ação apagará TODOS os dados permanentemente!\n\nTem certeza que deseja continuar?')) {
+                return;
+            }
+            
+            if (!confirm('🔴 ÚLTIMA CONFIRMAÇÃO: Todos os cronogramas, atividades e configurações serão perdidos!\n\nContinuar mesmo assim?')) {
+                return;
+            }
+            
+            // Limpar localStorage
+            localStorage.removeItem('cronogramaSorveteria');
+            
+            // Resetar variáveis
+            atividadesPredefinidas = [
+                { nome: "Fazer a lista 6 e 7", emoji: "📝", categoria: "administrativo" },
+                { nome: "Limpar cozinha", emoji: "🧹", categoria: "limpeza" },
+                { nome: "Limpar banheiro", emoji: "🚿", categoria: "limpeza" },
+                { nome: "Encher creme e açaí", emoji: "🍦", categoria: "especial" },
+                { nome: "Verificar freezers e fechamento", emoji: "❄️", categoria: "verificacao" }
+            ];
+            
+            funcionarios = ["LUCAS", "MARICÉLIA", "BEATRIZ", "ANDERSON"];
+            folgasPorDia = {
+                "SEGUNDA-FEIRA": ["MARICÉLIA"],
+                "TERÇA-FEIRA": ["LUCAS"],
+                "QUARTA-FEIRA": ["BEATRIZ"],
+                "QUINTA-FEIRA": ["ANDERSON"],
+                "SEXTA-FEIRA": [],
+                "SÁBADO": [],
+                "DOMINGO": []
+            };
+            historicoAtribuicoes = [];
+            senhaAdmin = '91454542';
+            
+            // Resetar interface
+            document.getElementById('estabelecimento').value = 'Sorveteria Delícia Tropical';
+            criarCronogramaInicial();
+            
+            if (userType === 'admin') {
+                carregarBibliotecaAtividades();
+                carregarAtividadesSelect();
+                carregarAtividadesCheckbox();
+                atualizarHistoricoAtribuicoes();
+                atualizarFolgasAtuais();
+            }
+            
+            atualizarTextoFolgas();
+            atualizarEstatisticas();
+            
+            mostrarAlertaSucesso('🗑️ Sistema resetado para configurações iniciais!');
+        }
+
+        // =================== SISTEMA DE SENHA ===================
+
+        function solicitarSenhaAdmin() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('senhaAdminScreen').classList.remove('hidden');
+            document.getElementById('senhaAtual').textContent = senhaAdmin;
+            document.getElementById('senhaAdminInput').focus();
+        }
+
+        function voltarParaLogin() {
+            document.getElementById('senhaAdminScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('senhaAdminInput').value = '';
+            document.getElementById('senhaErro').classList.add('hidden');
+        }
+
+        function verificarSenhaAdmin() {
+            const senhaDigitada = document.getElementById('senhaAdminInput').value;
+            
+            if (senhaDigitada === senhaAdmin) {
+                document.getElementById('senhaAdminScreen').classList.add('hidden');
+                document.getElementById('senhaErro').classList.add('hidden');
+                login('admin');
+            } else {
+                document.getElementById('senhaErro').classList.remove('hidden');
+                document.getElementById('senhaAdminInput').value = '';
+                document.getElementById('senhaAdminInput').focus();
+                
+                // Vibrar se disponível
+                if (navigator.vibrate) {
+                    navigator.vibrate(200);
+                }
+            }
+        }
+
+        function alterarSenha() {
+            const novaSenha = document.getElementById('novaSenhaInput').value.trim();
+            
+            if (!novaSenha) {
+                alert('⚠️ Digite uma nova senha!');
+                return;
+            }
+            
+            if (novaSenha.length < 4) {
+                alert('⚠️ A senha deve ter pelo menos 4 caracteres!');
+                return;
+            }
+            
+            senhaAdmin = novaSenha;
+            document.getElementById('senhaAtual').textContent = senhaAdmin;
+            document.getElementById('novaSenhaInput').value = '';
+            
+            salvarDados();
+            mostrarAlertaSucesso('🔐 Senha alterada com sucesso!');
+        }
+
+        function alterarSenhaConfig() {
+            const novaSenha = document.getElementById('configSenhaAdmin').value.trim();
+            
+            if (!novaSenha) {
+                alert('⚠️ Digite uma nova senha!');
+                return;
+            }
+            
+            if (novaSenha.length < 4) {
+                alert('⚠️ A senha deve ter pelo menos 4 caracteres!');
+                return;
+            }
+            
+            senhaAdmin = novaSenha;
+            document.getElementById('configSenhaAdmin').value = '';
+            
+            salvarDados();
+            mostrarAlertaSucesso('🔐 Senha de administrador alterada!');
+        }
+
+        // =================== SISTEMA DE LOGIN ===================
+
+        function login(tipo) {
+            userType = tipo;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            
+            if (tipo === 'admin') {
+                document.getElementById('userPerfil').textContent = '👨‍💼 ADMINISTRADOR';
+                document.body.classList.remove('funcionario-mode');
+                document.body.classList.add('admin-mode');
+            } else {
+                document.getElementById('userPerfil').textContent = '👨‍🍳 FUNCIONÁRIO';
+                document.body.classList.add('funcionario-mode');
+                document.body.classList.remove('admin-mode');
+            }
+            
+            // Carregar dados salvos
+            const dadosCarregados = carregarDados();
+            
+            // Inicializar sistema
+            setTimeout(() => {
+                criarCronogramaInicial();
+                if (tipo === 'admin') {
+                    carregarBibliotecaAtividades();
+                    carregarAtividadesSelect();
+                    carregarAtividadesCheckbox();
+                    atualizarHistoricoAtribuicoes();
+                    atualizarFolgasAtuais();
+                }
+                
+                // Aplicar estado salvo do cronograma
+                if (dadosCarregados && dadosCarregados.cronograma) {
+                    setTimeout(() => {
+                        aplicarEstadoCronograma(dadosCarregados.cronograma);
+                        atualizarEstatisticas();
+                    }, 100);
+                } else {
+                    atualizarEstatisticas();
+                }
+                
+                atualizarTextoFolgas();
+            }, 100);
+        }
+
+        function logout() {
+            if (confirm('Deseja realmente sair do sistema?')) {
+                salvarDados(); // Salvar antes de sair
+                userType = null;
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('userInfo').classList.add('hidden');
+                document.body.classList.remove('funcionario-mode', 'admin-mode');
+                
+                // Limpar cronograma
+                document.getElementById('cronograma').innerHTML = '';
+            }
+        }
+
+        // =================== FUNÇÕES DO CRONOGRAMA ===================
+
+        function criarCronogramaInicial() {
+            console.log('Iniciando criação do cronograma...');
+            const cronograma = document.getElementById('cronograma');
+            
+            if (!cronograma) {
+                console.error('Elemento cronograma não encontrado!');
+                return;
+            }
+            
+            cronograma.innerHTML = '';
+
+            diasSemana.forEach((dia, index) => {
+                console.log(`Criando dia: ${dia}`);
+                const diaElement = criarDiaElement(dia);
+                cronograma.appendChild(diaElement);
+            });
+            
+            console.log(`Cronograma criado com ${cronograma.children.length} dias`);
+        }
+
+        function criarDiaElement(nomeDia) {
+            const dia = document.createElement('div');
+            dia.className = 'dia';
+            
+            const header = document.createElement('div');
+            header.className = 'dia-header';
+            header.innerHTML = `<span>${nomeDia}</span>`;
+            
+            const funcionariosContainer = document.createElement('div');
+            funcionariosContainer.className = 'funcionarios';
+            
+            funcionarios.forEach(nomeFuncionario => {
+                const funcionarioElement = criarFuncionarioElement(nomeFuncionario, nomeDia);
+                funcionariosContainer.appendChild(funcionarioElement);
+            });
+            
+            if (userType === 'admin') {
+                const addButton = document.createElement('button');
+                addButton.className = 'add-funcionario-dia admin-only';
+                addButton.textContent = '+ Funcionário';
+                addButton.onclick = function() { addFuncionario(this); };
+                funcionariosContainer.appendChild(addButton);
+            }
+            
+            dia.appendChild(header);
+            dia.appendChild(funcionariosContainer);
+            
+            return dia;
+        }
+
+        function criarFuncionarioElement(nomeFuncionario, nomeDia) {
+            const funcionario = document.createElement('div');
+            const isFolga = folgasPorDia[nomeDia] && folgasPorDia[nomeDia].includes(nomeFuncionario);
+            funcionario.className = isFolga ? 'funcionario folga' : 'funcionario';
+            
+            const header = document.createElement('div');
+            header.className = 'funcionario-header';
+            
+            // Criar o span com o nome do funcionário
+            const nomeSpan = document.createElement('span');
+            nomeSpan.className = 'nome-funcionario';
+            nomeSpan.textContent = nomeFuncionario;
+            
+            // Adicionar evento de clique para edição apenas no modo admin
+            if (userType === 'admin') {
+                nomeSpan.onclick = function() { editarNomeFuncionario(this); };
+            }
+            
+            header.appendChild(nomeSpan);
+            
+            // Adicionar botão de remover funcionário apenas para admin
+            if (userType === 'admin') {
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '×';
+                removeBtn.className = 'remove-funcionario';
+                removeBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    removeFuncionario(this);
+                };
+                header.appendChild(removeBtn);
+            }
+            
+            const tarefas = document.createElement('div');
+            tarefas.className = 'tarefas';
+            
+            if (isFolga) {
+                tarefas.innerHTML = '<div class="folga-text" style="text-align: center; font-weight: bold; color: #ff6b6b; margin-top: 20px;">🚫 FOLGA</div>';
+            } else {
+                const tarefasPadrao = obterTarefasPadrao(nomeFuncionario, nomeDia);
+                
+                tarefasPadrao.forEach(tarefa => {
+                    const tarefaElement = criarTarefaElement(tarefa.nome, tarefa.emoji, tarefa.especial);
+                    tarefas.appendChild(tarefaElement);
+                });
+                
+                if (userType === 'admin') {
+                    const addButton = document.createElement('button');
+                    addButton.className = 'add-tarefa admin-only';
+                    addButton.textContent = '+ Adicionar Tarefa';
+                    addButton.onclick = function() { addTarefa(this); };
+                    tarefas.appendChild(addButton);
+                    
+                    // Adicionar eventos de drag and drop apenas para admin
+                    tarefas.addEventListener('dragover', handleDragOver);
+                    tarefas.addEventListener('drop', handleDrop);
+                }
+            }
+            
+            funcionario.appendChild(header);
+            funcionario.appendChild(tarefas);
+            
+            return funcionario;
+        }
+
+        function editarNomeFuncionario(nomeSpan) {
+            if (userType !== 'admin' || !isEditMode) return;
+            
+            const currentText = nomeSpan.textContent.trim();
+            const funcionarioHeader = nomeSpan.parentElement;
+            
+            // Adicionar classe de edição para feedback visual
+            funcionarioHeader.classList.add('editando');
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentText;
+            input.className = 'nome-funcionario-input';
+            
+            // Substituir o conteúdo do span pelo input
+            nomeSpan.innerHTML = '';
+            nomeSpan.appendChild(input);
+            
+            input.focus();
+            input.select();
+            
+            // Função para finalizar edição
+            function finalizarEdicao() {
+                const novoNome = input.value.trim().toUpperCase();
+                
+                if (novoNome === '') {
+                    nomeSpan.textContent = currentText;
+                } else {
+                    nomeSpan.textContent = novoNome;
+                    
+                    // Atualizar nos selects da sidebar se existirem
+                    atualizarSelectsFuncionarios(currentText, novoNome);
+                    
+                    // Salvar alterações
+                    salvarDados();
+                    
+                    // Mostrar feedback de sucesso
+                    mostrarAlertaSucesso(`✅ Nome alterado de "${currentText}" para "${novoNome}"`);
+                }
+                
+                funcionarioHeader.classList.remove('editando');
+            }
+            
+            // Eventos para finalizar edição
+            input.onblur = finalizarEdicao;
+            
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    finalizarEdicao();
+                } else if (e.key === 'Escape') {
+                    nomeSpan.textContent = currentText;
+                    funcionarioHeader.classList.remove('editando');
+                }
+            };
+        }
+
+        function atualizarSelectsFuncionarios(nomeAntigo, nomeNovo) {
+            // Atualizar select de funcionários na aba de atribuição
+            const selectFuncionario = document.getElementById('selectFuncionario');
+            if (selectFuncionario) {
+                const options = selectFuncionario.querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.value === nomeAntigo) {
+                        option.value = nomeNovo;
+                        option.textContent = option.textContent.replace(nomeAntigo, nomeNovo);
+                    }
+                });
+            }
+            
+            // Atualizar select de funcionários na aba de folgas
+            const selectFuncionarioFolga = document.getElementById('selectFuncionarioFolga');
+            if (selectFuncionarioFolga) {
+                const options = selectFuncionarioFolga.querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.value === nomeAntigo) {
+                        option.value = nomeNovo;
+                        option.textContent = option.textContent.replace(nomeAntigo, nomeNovo);
+                    }
+                });
+            }
+            
+            // Atualizar array de funcionários globalmente
+            const index = funcionarios.indexOf(nomeAntigo);
+            if (index !== -1) {
+                funcionarios[index] = nomeNovo;
+            }
+        }
+
+        function obterTarefasPadrao(funcionario, dia) {
+            const tarefasBase = [
+                { nome: "Fazer a lista 6 e 7", emoji: "📝" },
+                { nome: "Limpar cozinha", emoji: "🧹" },
+                { nome: "Limpar banheiro", emoji: "🚿" }
+            ];
+
+            if (funcionario === "LUCAS" || funcionario === "ANDERSON") {
+                if (dia === "DOMINGO") {
+                    tarefasBase.push({ nome: "🍦 ENCHER CREME E AÇAÍ (c/ " + (funcionario === "LUCAS" ? "Anderson" : "Lucas") + ")", emoji: "🍦", especial: true });
+                } else {
+                    tarefasBase.push({ nome: "🍦 ENCHER CREME E AÇAÍ", emoji: "🍦", especial: true });
+                }
+            }
+
+            if (funcionario === "BEATRIZ") {
+                tarefasBase.push(
+                    { nome: "Limpar a 2ª cozinha", emoji: "🧽" },
+                    { nome: "Limpar o salão", emoji: "🪣" },
+                    { nome: "Lavar colheres e acrílico", emoji: "🥄" }
+                );
+            }
+
+            return tarefasBase;
+        }
+
+        function criarTarefaElement(nome, emoji = "📝", especial = false) {
+            const tarefa = document.createElement('div');
+            tarefa.className = especial ? 'tarefa especial' : 'tarefa';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'tarefa-checkbox';
+            checkbox.onclick = function(e) { 
+                e.stopPropagation(); 
+                toggleTarefaConcluida(this); 
+            };
+            
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'tarefa-emoji';
+            emojiSpan.textContent = emoji;
+            
+            const textoSpan = document.createElement('span');
+            textoSpan.className = 'tarefa-texto';
+            textoSpan.textContent = nome;
+            
+            tarefa.appendChild(checkbox);
+            tarefa.appendChild(emojiSpan);
+            tarefa.appendChild(textoSpan);
+            
+            // Apenas admin pode editar tarefas
+            if (userType === 'admin') {
+                tarefa.onclick = function() { editTarefa(this); };
+                
+                // Botão de remover tarefa (visível apenas no modo edição)
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '×';
+                removeBtn.className = 'remove-tarefa';
+                removeBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    removeTarefa(tarefa);
+                };
+                tarefa.appendChild(removeBtn);
+            }
+            
+            return tarefa;
+        }
+
+        function toggleTarefaConcluida(checkbox) {
+            const tarefa = checkbox.closest('.tarefa');
+            if (checkbox.checked) {
+                tarefa.classList.add('concluida');
+            } else {
+                tarefa.classList.remove('concluida');
+            }
+            atualizarEstatisticas();
+            salvarDados(); // Salvar automaticamente
+        }
+
+        function removeTarefa(element) {
+            if (userType !== 'admin') return;
+            
+            if (confirm('Deseja realmente remover esta tarefa?')) {
+                element.remove();
+                atualizarEstatisticas();
+                salvarDados();
+            }
+        }
+
+        function addFuncionario(button) {
+            if (userType !== 'admin') return;
+            
+            const funcionariosContainer = button.parentNode;
+            const newFuncionario = criarFuncionarioElement('NOVO FUNCIONÁRIO', 'NOVO DIA');
+            funcionariosContainer.insertBefore(newFuncionario, button);
+            salvarDados();
+        }
+
+        function removeFuncionario(button) {
+            if (userType !== 'admin') return;
+            
+            const funcionario = button.closest('.funcionario');
+            const nomeFuncionario = funcionario.querySelector('.funcionario-header .nome-funcionario').textContent.trim();
+            
+            if (confirm(`Deseja realmente remover o funcionário "${nomeFuncionario}"?`)) {
+                funcionario.remove();
+                atualizarEstatisticas();
+                salvarDados();
+                alert('✅ Funcionário removido com sucesso!');
+            }
+        }
+
+        function atualizarEstatisticas() {
+            const totalTarefas = document.querySelectorAll('.tarefa').length;
+            const tarefasConcluidas = document.querySelectorAll('.tarefa.concluida').length;
+            const porcentagem = totalTarefas > 0 ? (tarefasConcluidas / totalTarefas) * 100 : 0;
+            
+            const totalElement = document.getElementById('totalAtividades');
+            const concluidasElement = document.getElementById('atividadesConcluidas');
+            const progressElement = document.getElementById('progressFill');
+            
+            if (totalElement) {
+                animarNumero(totalElement, parseInt(totalElement.textContent) || 0, totalTarefas);
+            }
+            
+            if (concluidasElement) {
+                animarNumero(concluidasElement, parseInt(concluidasElement.textContent) || 0, tarefasConcluidas);
+            }
+            
+            if (progressElement) {
+                progressElement.style.width = porcentagem + '%';
+                
+                // Animação especial quando completa 100%
+                if (porcentagem === 100 && totalTarefas > 0) {
+                    progressElement.style.animation = 'progressComplete 2s ease infinite';
+                    setTimeout(() => {
+                        progressElement.style.animation = 'progressRainbow 4s ease infinite';
+                    }, 4000);
+                }
+            }
+        }
+
+        function animarNumero(elemento, valorInicial, valorFinal) {
+            const duracao = 800; // ms
+            const inicio = Date.now();
+            const diferenca = valorFinal - valorInicial;
+            
+            function animar() {
+                const agora = Date.now();
+                const progresso = Math.min((agora - inicio) / duracao, 1);
+                
+                // Easing function (ease-out)
+                const easeOut = 1 - Math.pow(1 - progresso, 3);
+                const valorAtual = Math.round(valorInicial + (diferenca * easeOut));
+                
+                elemento.textContent = valorAtual;
+                
+                // Efeito visual de mudança
+                if (valorAtual !== valorInicial) {
+                    elemento.style.transform = `scale(${1.1 - (0.1 * progresso)})`;
+                    elemento.style.color = progresso < 1 ? '#e91e63' : '';
+                }
+                
+                if (progresso < 1) {
+                    requestAnimationFrame(animar);
+                } else {
+                    elemento.style.transform = 'scale(1)';
+                    elemento.style.color = '';
+                }
+            }
+            
+            if (diferenca !== 0) {
+                animar();
+            }
+        }
+
+        // =================== FUNÇÕES ADMINISTRATIVAS ===================
+
+        function toggleEditMode() {
+            if (userType !== 'admin') return;
+            
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('editBtn');
+            
+            if (isEditMode) {
+                btn.textContent = '❌ Sair do Modo Edição';
+                btn.classList.add('edit-mode');
+                document.body.classList.add('admin-mode');
+                
+                // Mostrar tooltip explicativo
+                mostrarTooltipEdicao();
+            } else {
+                btn.textContent = '✏️ Modo Edição';
+                btn.classList.remove('edit-mode');
+                document.body.classList.remove('admin-mode');
+                
+                // Remover tooltip
+                removerTooltipEdicao();
+            }
+            
+            salvarDados();
+        }
+
+        function mostrarTooltipEdicao() {
+            // Remover tooltip anterior se existir
+            removerTooltipEdicao();
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'edit-mode-tooltip';
+            tooltip.id = 'editTooltip';
+            tooltip.innerHTML = `
+                <button class="close-tooltip" onclick="removerTooltipEdicao()">×</button>
+                <strong>🎯 Modo Edição Ativo!</strong><br>
+                • Clique no nome dos funcionários para editar<br>
+                • Use os botões × para remover itens<br>
+                • Edite tarefas clicando nelas<br>
+                • Todas alterações são salvas automaticamente
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            // Auto-remover após 8 segundos
+            setTimeout(() => {
+                removerTooltipEdicao();
+            }, 8000);
+        }
+
+        function removerTooltipEdicao() {
+            const tooltip = document.getElementById('editTooltip');
+            if (tooltip) {
+                tooltip.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => {
+                    if (tooltip.parentNode) {
+                        tooltip.parentNode.removeChild(tooltip);
+                    }
+                }, 300);
+            }
+        }
+
+        function toggleSidebar() {
+            if (userType !== 'admin') return;
+            
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        function addDia() {
+            if (userType !== 'admin') return;
+            
+            const cronograma = document.getElementById('cronograma');
+            const newDia = criarDiaElement('NOVO DIA');
+            cronograma.appendChild(newDia);
+            salvarDados();
+        }
+
+        function recriarCronograma() {
+            if (userType !== 'admin') return;
+            
+            criarCronogramaInicial();
+            atualizarEstatisticas();
+            salvarDados();
+            alert('✅ Cronograma recriado com sucesso!');
+        }
+
+        function exportHTML() {
+            if (userType !== 'admin') return;
+            
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'cronograma_sorveteria.html';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        }
+
+        // =================== BIBLIOTECA DE ATIVIDADES ===================
+
+        function carregarBibliotecaAtividades() {
+            if (userType !== 'admin') return;
+            
+            const container = document.getElementById('bibliotecaAtividades');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            atividadesPredefinidas.forEach((atividade, index) => {
+                const atividadeElement = document.createElement('div');
+                atividadeElement.className = 'atividade-biblioteca';
+                atividadeElement.draggable = true;
+                atividadeElement.setAttribute('data-atividade', JSON.stringify(atividade));
+                
+                atividadeElement.innerHTML = `
+                    <span class="atividade-emoji">${atividade.emoji}</span>
+                    <span class="atividade-texto">${atividade.nome}</span>
+                    <button class="remove-atividade-btn" onclick="removerAtividade(${index})" title="Remover atividade">×</button>
+                `;
+                
+                atividadeElement.addEventListener('dragstart', handleDragStart);
+                container.appendChild(atividadeElement);
+            });
+        }
+
+        function removerAtividade(index) {
+            if (userType !== 'admin') return;
+            
+            const atividade = atividadesPredefinidas[index];
+            if (confirm(`Deseja realmente remover a atividade "${atividade.emoji} ${atividade.nome}"?`)) {
+                atividadesPredefinidas.splice(index, 1);
+                carregarBibliotecaAtividades();
+                carregarAtividadesSelect();
+                carregarAtividadesCheckbox();
+                salvarDados();
+                alert('✅ Atividade removida com sucesso!');
+            }
+        }
+
+        function adicionarAtividadeRapida(tipo, emoji, categoria) {
+            if (userType !== 'admin') return;
+            
+            const nomeInput = document.getElementById('novaAtividadeNome');
+            const emojiInput = document.getElementById('novaAtividadeEmoji');
+            const categoriaSelect = document.getElementById('novaAtividadeCategoria');
+            
+            nomeInput.value = `${tipo} `;
+            emojiInput.value = emoji;
+            categoriaSelect.value = categoria;
+            
+            // Focar no campo de nome para completar
+            nomeInput.focus();
+            nomeInput.setSelectionRange(nomeInput.value.length, nomeInput.value.length);
+        }
+
+        function selecionarEmoji(emoji) {
+            if (userType !== 'admin') return;
+            
+            document.getElementById('novaAtividadeEmoji').value = emoji;
+            
+            // Remover seleção anterior
+            document.querySelectorAll('.emoji-option').forEach(el => el.classList.remove('selected'));
+            
+            // Adicionar seleção atual
+            event.target.classList.add('selected');
+            
+            // Pequena animação de feedback
+            event.target.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                event.target.style.transform = 'scale(1.1)';
+            }, 150);
+        }
+
+        function adicionarAtividade() {
+            if (userType !== 'admin') return;
+            
+            const nome = document.getElementById('novaAtividadeNome').value.trim();
+            const emoji = document.getElementById('novaAtividadeEmoji').value.trim() || "📝";
+            const categoria = document.getElementById('novaAtividadeCategoria').value || "personalizada";
+            
+            if (nome) {
+                // Verificar se já existe
+                const jaExiste = atividadesPredefinidas.some(atividade => 
+                    atividade.nome.toLowerCase() === nome.toLowerCase()
+                );
+                
+                if (jaExiste) {
+                    alert('⚠️ Esta atividade já existe na biblioteca!');
+                    return;
+                }
+                
+                const novaAtividade = { nome, emoji, categoria };
+                atividadesPredefinidas.push(novaAtividade);
+                carregarBibliotecaAtividades();
+                carregarAtividadesSelect();
+                carregarAtividadesCheckbox();
+                
+                // Limpar campos
+                document.getElementById('novaAtividadeNome').value = '';
+                document.getElementById('novaAtividadeEmoji').value = '';
+                document.getElementById('novaAtividadeCategoria').value = 'limpeza';
+                
+                // Remover seleção de emoji
+                document.querySelectorAll('.emoji-option').forEach(el => el.classList.remove('selected'));
+                
+                atualizarEstatisticas();
+                salvarDados();
+                
+                // Feedback visual melhorado
+                mostrarAlertaSucesso('✅ Atividade adicionada com sucesso!');
+            } else {
+                alert('⚠️ Por favor, digite o nome da atividade!');
+            }
+        }
+
+        function mostrarAlertaSucesso(mensagem) {
+            const alert = document.createElement('div');
+            alert.className = 'atividade-salva-alert';
+            alert.textContent = mensagem;
+            alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(45deg, #4caf50, #81c784);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+                animation: slideDown 0.5s ease;
+            `;
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.style.animation = 'slideUp 0.5s ease forwards';
+                    setTimeout(() => {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, 500);
+                }
+            }, 3000);
+        }
+
+        function salvarTarefaNaBiblioteca(nomeTarefa, emoji = "📝") {
+            if (userType !== 'admin') return;
+            
+            // Verificar se já existe na biblioteca
+            const jaExiste = atividadesPredefinidas.some(atividade => 
+                atividade.nome.toLowerCase().trim() === nomeTarefa.toLowerCase().trim()
+            );
+            
+            if (!jaExiste && nomeTarefa.trim() !== '' && nomeTarefa.trim() !== 'Nova tarefa') {
+                const novaAtividade = { 
+                    nome: nomeTarefa.trim(), 
+                    emoji: emoji, 
+                    categoria: "personalizada" 
+                };
+                
+                atividadesPredefinidas.push(novaAtividade);
+                
+                // Recarregar componentes se estão visíveis
+                if (document.getElementById('bibliotecaAtividades')) {
+                    carregarBibliotecaAtividades();
+                    carregarAtividadesSelect();
+                    carregarAtividadesCheckbox();
+                }
+                
+                salvarDados();
+                
+                // Mostrar notificação discreta
+                mostrarAlertaSucesso(`💾 "${nomeTarefa}" salva na biblioteca!`);
+            }
+        }
+
+        function switchTab(tabName) {
+            if (userType !== 'admin') return;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+            
+            if (tabName === 'atribuir') {
+                carregarAtividadesSelect();
+                carregarAtividadesCheckbox();
+                atualizarHistoricoAtribuicoes();
+            } else if (tabName === 'folgas') {
+                atualizarFolgasAtuais();
+            }
+        }
+
+        // =================== SISTEMA DE FOLGAS ===================
+
+        function atualizarFolgasAtuais() {
+            if (userType !== 'admin') return;
+            
+            const container = document.getElementById('folgasAtuais');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            let totalFolgas = 0;
+            
+            Object.keys(folgasPorDia).forEach(dia => {
+                if (folgasPorDia[dia].length > 0) {
+                    folgasPorDia[dia].forEach(funcionario => {
+                        totalFolgas++;
+                        const folgaItem = document.createElement('div');
+                        folgaItem.className = 'folga-item';
+                        folgaItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 8px; margin: 5px 0; background: rgba(255, 107, 107, 0.1); border-radius: 8px; font-size: 12px;';
+                        folgaItem.innerHTML = `
+                            <span>👤 ${funcionario} • 📅 ${dia}</span>
+                            <button class="remove-folga-btn" onclick="removerFolgaEspecifica('${funcionario}', '${dia}')" style="background: #ff4757; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px;">❌</button>
+                        `;
+                        container.appendChild(folgaItem);
+                    });
+                }
+            });
+            
+            if (totalFolgas === 0) {
+                container.innerHTML = '<p style="color: #7f8c8d; font-size: 12px; text-align: center;">Nenhuma folga definida.</p>';
+            }
+        }
+
+        function definirFolga() {
+            if (userType !== 'admin') return;
+            
+            const funcionario = document.getElementById('selectFuncionarioFolga').value;
+            const dia = document.getElementById('selectDiaFolga').value;
+            
+            if (!funcionario || !dia) {
+                alert('⚠️ Por favor, selecione funcionário e dia!');
+                return;
+            }
+            
+            // Verificar se já está de folga neste dia
+            if (folgasPorDia[dia].includes(funcionario)) {
+                alert(`ℹ️ ${funcionario} já está de folga em ${dia}!`);
+                return;
+            }
+            
+            // Verificar se já tem folga em outro dia
+            const folgaAtual = Object.keys(folgasPorDia).find(d => folgasPorDia[d].includes(funcionario));
+            if (folgaAtual) {
+                if (!confirm(`⚠️ ${funcionario} já tem folga em ${folgaAtual}. Deseja mover para ${dia}?`)) {
+                    return;
+                }
+                // Remover da folga atual
+                folgasPorDia[folgaAtual] = folgasPorDia[folgaAtual].filter(f => f !== funcionario);
+            }
+            
+            // Adicionar nova folga
+            folgasPorDia[dia].push(funcionario);
+            
+            // Recriar cronograma para aplicar mudanças
+            criarCronogramaInicial();
+            atualizarFolgasAtuais();
+            atualizarTextoFolgas();
+            salvarDados();
+            
+            // Limpar seleções
+            document.getElementById('selectFuncionarioFolga').value = '';
+            document.getElementById('selectDiaFolga').value = '';
+            
+            alert(`✅ Folga definida: ${funcionario} em ${dia}!`);
+        }
+
+        function removerFolga() {
+            if (userType !== 'admin') return;
+            
+            const funcionario = document.getElementById('selectFuncionarioFolga').value;
+            const dia = document.getElementById('selectDiaFolga').value;
+            
+            if (!funcionario) {
+                alert('⚠️ Por favor, selecione o funcionário!');
+                return;
+            }
+            
+            let removido = false;
+            
+            if (dia) {
+                // Remover de dia específico
+                if (folgasPorDia[dia].includes(funcionario)) {
+                    folgasPorDia[dia] = folgasPorDia[dia].filter(f => f !== funcionario);
+                    removido = true;
+                }
+            } else {
+                // Remover de todos os dias
+                Object.keys(folgasPorDia).forEach(d => {
+                    if (folgasPorDia[d].includes(funcionario)) {
+                        folgasPorDia[d] = folgasPorDia[d].filter(f => f !== funcionario);
+                        removido = true;
+                    }
+                });
+            }
+            
+            if (removido) {
+                criarCronogramaInicial();
+                atualizarFolgasAtuais();
+                atualizarTextoFolgas();
+                salvarDados();
+                
+                document.getElementById('selectFuncionarioFolga').value = '';
+                document.getElementById('selectDiaFolga').value = '';
+                
+                alert(`✅ Folga removida para ${funcionario}!`);
+            } else {
+                alert(`ℹ️ ${funcionario} não estava de folga${dia ? ' em ' + dia : ''}!`);
+            }
+        }
+
+        function removerFolgaEspecifica(funcionario, dia) {
+            if (userType !== 'admin') return;
+            
+            if (confirm(`Remover folga de ${funcionario} em ${dia}?`)) {
+                folgasPorDia[dia] = folgasPorDia[dia].filter(f => f !== funcionario);
+                criarCronogramaInicial();
+                atualizarFolgasAtuais();
+                atualizarTextoFolgas();
+                salvarDados();
+                alert(`✅ Folga removida!`);
+            }
+        }
+
+        function aplicarFolgasPadrao() {
+            if (userType !== 'admin') return;
+            
+            if (confirm('Aplicar folgas padrão? Isso substituirá todas as folgas atuais.')) {
+                // Resetar todas as folgas
+                Object.keys(folgasPorDia).forEach(dia => {
+                    folgasPorDia[dia] = [];
+                });
+                
+                // Aplicar folgas padrão
+                folgasPorDia["SEGUNDA-FEIRA"] = ["MARICÉLIA"];
+                folgasPorDia["TERÇA-FEIRA"] = ["LUCAS"];
+                folgasPorDia["QUARTA-FEIRA"] = ["BEATRIZ"];
+                folgasPorDia["QUINTA-FEIRA"] = ["ANDERSON"];
+                
+                criarCronogramaInicial();
+                atualizarFolgasAtuais();
+                atualizarTextoFolgas();
+                salvarDados();
+                
+                alert('✅ Folgas padrão aplicadas com sucesso!');
+            }
+        }
+
+        function atualizarTextoFolgas() {
+            const textoFolgas = [];
+            
+            Object.keys(folgasPorDia).forEach(dia => {
+                if (folgasPorDia[dia].length > 0) {
+                    const nomeDia = dia.charAt(0) + dia.slice(1).toLowerCase().replace('-feira', '-feira');
+                    folgasPorDia[dia].forEach(funcionario => {
+                        textoFolgas.push(`👨‍🍳 ${funcionario}: ${nomeDia}`);
+                    });
+                }
+            });
+            
+            const textoElement = document.querySelector('.folgas p');
+            if (textoElement) {
+                if (textoFolgas.length > 0) {
+                    textoElement.textContent = textoFolgas.join(' | ');
+                } else {
+                    textoElement.textContent = 'Nenhuma folga definida no momento.';
+                }
+            }
+        }
+
+        function filtrarAtividades() {
+            if (userType !== 'admin') return;
+            
+            const searchTerm = document.getElementById('searchAtividades')?.value.toLowerCase() || '';
+            const categoria = document.getElementById('filtroCategoria')?.value || '';
+            
+            const atividades = document.querySelectorAll('.atividade-biblioteca');
+            
+            atividades.forEach(atividade => {
+                const texto = atividade.textContent.toLowerCase();
+                const atividadeData = JSON.parse(atividade.getAttribute('data-atividade'));
+                
+                const matchSearch = searchTerm === '' || texto.includes(searchTerm);
+                const matchCategoria = categoria === '' || atividadeData.categoria === categoria;
+                
+                if (matchSearch && matchCategoria) {
+                    atividade.style.display = 'flex';
+                } else {
+                    atividade.style.display = 'none';
+                }
+            });
+        }
+
+        function carregarAtividadesSelect() {
+            if (userType !== 'admin') return;
+            
+            const select = document.getElementById('selectAtividade');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Selecione a atividade</option>';
+            
+            atividadesPredefinidas.forEach((atividade, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${atividade.emoji} ${atividade.nome}`;
+                select.appendChild(option);
+            });
+        }
+
+        function carregarAtividadesCheckbox() {
+            if (userType !== 'admin') return;
+            
+            const container = document.getElementById('atividadesCheckbox');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            atividadesPredefinidas.forEach((atividade, index) => {
+                const item = document.createElement('div');
+                item.style.cssText = 'display: flex; align-items: center; padding: 5px; margin: 3px 0; background: rgba(255, 255, 255, 0.8); border-radius: 4px; font-size: 12px;';
+                item.innerHTML = `
+                    <input type="checkbox" id="ativ_${index}" value="${index}" style="margin-right: 8px;">
+                    <span style="margin-right: 5px;">${atividade.emoji}</span>
+                    <span>${atividade.nome}</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function atribuirAtividade() {
+            if (userType !== 'admin') return;
+            
+            const funcionario = document.getElementById('selectFuncionario').value;
+            const dia = document.getElementById('selectDia').value;
+            const atividadeIndex = document.getElementById('selectAtividade').value;
+            
+            if (!funcionario || !dia || !atividadeIndex) {
+                alert('⚠️ Por favor, preencha todos os campos!');
+                return;
+            }
+            
+            if (folgasPorDia[dia] && folgasPorDia[dia].includes(funcionario)) {
+                if (!confirm(`⚠️ ${funcionario} está de folga em ${dia}. Deseja continuar mesmo assim?`)) {
+                    return;
+                }
+            }
+            
+            const atividade = atividadesPredefinidas[atividadeIndex];
+            const sucesso = adicionarTarefaAoFuncionario(funcionario, dia, atividade);
+            
+            if (sucesso) {
+                historicoAtribuicoes.unshift({
+                    funcionario,
+                    dia,
+                    atividade: atividade.nome,
+                    emoji: atividade.emoji,
+                    tempo: new Date().toLocaleTimeString()
+                });
+                
+                if (historicoAtribuicoes.length > 10) {
+                    historicoAtribuicoes = historicoAtribuicoes.slice(0, 10);
+                }
+                
+                atualizarHistoricoAtribuicoes();
+                atualizarEstatisticas();
+                salvarDados();
+                
+                document.getElementById('selectFuncionario').value = '';
+                document.getElementById('selectDia').value = '';
+                document.getElementById('selectAtividade').value = '';
+                
+                alert(`✅ Atividade "${atividade.emoji} ${atividade.nome}" atribuída para ${funcionario} em ${dia}!`);
+            }
+        }
+
+        function atribuirMultiplasAtividades() {
+            if (userType !== 'admin') return;
+            
+            const funcionario = document.getElementById('selectFuncionario').value;
+            const dia = document.getElementById('selectDia').value;
+            
+            if (!funcionario || !dia) {
+                alert('⚠️ Por favor, selecione funcionário e dia primeiro!');
+                return;
+            }
+            
+            const checkboxes = document.querySelectorAll('#atividadesCheckbox input[type="checkbox"]:checked');
+            
+            if (checkboxes.length === 0) {
+                alert('⚠️ Selecione pelo menos uma atividade!');
+                return;
+            }
+            
+            let sucessos = 0;
+            
+            checkboxes.forEach(checkbox => {
+                const atividadeIndex = checkbox.value;
+                const atividade = atividadesPredefinidas[atividadeIndex];
+                
+                if (adicionarTarefaAoFuncionario(funcionario, dia, atividade)) {
+                    sucessos++;
+                    
+                    historicoAtribuicoes.unshift({
+                        funcionario,
+                        dia,
+                        atividade: atividade.nome,
+                        emoji: atividade.emoji,
+                        tempo: new Date().toLocaleTimeString()
+                    });
+                }
+                
+                checkbox.checked = false;
+            });
+            
+            if (historicoAtribuicoes.length > 10) {
+                historicoAtribuicoes = historicoAtribuicoes.slice(0, 10);
+            }
+            
+            atualizarHistoricoAtribuicoes();
+            atualizarEstatisticas();
+            salvarDados();
+            
+            alert(`✅ ${sucessos} atividades atribuídas para ${funcionario} em ${dia}!`);
+        }
+
+        function adicionarTarefaAoFuncionario(nomeFuncionario, nomeDia, atividade) {
+            const dias = document.querySelectorAll('.dia');
+            let diaEncontrado = null;
+            
+            for (let dia of dias) {
+                const headerText = dia.querySelector('.dia-header span').textContent.trim();
+                if (headerText === nomeDia) {
+                    diaEncontrado = dia;
+                    break;
+                }
+            }
+            
+            if (!diaEncontrado) {
+                alert('❌ Dia não encontrado!');
+                return false;
+            }
+            
+            const funcionarios = diaEncontrado.querySelectorAll('.funcionario');
+            let funcionarioEncontrado = null;
+            
+            for (let funcionario of funcionarios) {
+                const headerText = funcionario.querySelector('.funcionario-header .nome-funcionario').textContent.trim();
+                if (headerText === nomeFuncionario) {
+                    funcionarioEncontrado = funcionario;
+                    break;
+                }
+            }
+            
+            if (!funcionarioEncontrado) {
+                alert('❌ Funcionário não encontrado!');
+                return false;
+            }
+            
+            if (funcionarioEncontrado.classList.contains('folga')) {
+                funcionarioEncontrado.classList.remove('folga');
+                const tarefasContainer = funcionarioEncontrado.querySelector('.tarefas');
+                tarefasContainer.innerHTML = '';
+                
+                const addButton = document.createElement('button');
+                addButton.className = 'add-tarefa admin-only';
+                addButton.textContent = '+ Adicionar Tarefa';
+                addButton.onclick = function() { addTarefa(this); };
+                tarefasContainer.appendChild(addButton);
+                
+                tarefasContainer.addEventListener('dragover', handleDragOver);
+                tarefasContainer.addEventListener('drop', handleDrop);
+            }
+            
+            const tarefasContainer = funcionarioEncontrado.querySelector('.tarefas');
+            const addButton = tarefasContainer.querySelector('.add-tarefa');
+            
+            const isEspecial = atividade.categoria === 'especial';
+            const novaTarefa = criarTarefaElement(atividade.nome, atividade.emoji, isEspecial);
+            
+            if (addButton) {
+                tarefasContainer.insertBefore(novaTarefa, addButton);
+            } else {
+                tarefasContainer.appendChild(novaTarefa);
+            }
+            
+            return true;
+        }
+
+        function atualizarHistoricoAtribuicoes() {
+            if (userType !== 'admin') return;
+            
+            const container = document.getElementById('historicoAtribuicoes');
+            if (!container) return;
+            
+            if (historicoAtribuicoes.length === 0) {
+                container.innerHTML = '<p style="color: #7f8c8d; font-size: 12px;">Nenhuma atribuição feita ainda.</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            historicoAtribuicoes.forEach(item => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: white; padding: 8px; margin: 5px 0; border-radius: 4px; font-size: 12px; border-left: 3px solid #e91e63;';
+                div.innerHTML = `
+                    <div><strong>${item.emoji} ${item.atividade}</strong></div>
+                    <div>👤 ${item.funcionario} • 📅 ${item.dia}</div>
+                    <div style="color: #7f8c8d; font-size: 10px;">⏰ ${item.tempo}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // =================== DRAG AND DROP ===================
+
+        function handleDragStart(e) {
+            if (userType !== 'admin') return;
+            
+            const atividade = JSON.parse(e.target.getAttribute('data-atividade'));
+            e.dataTransfer.setData('application/json', JSON.stringify(atividade));
+            e.target.style.opacity = '0.5';
+        }
+
+        function handleDragOver(e) {
+            if (userType !== 'admin') return;
+            
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDrop(e) {
+            if (userType !== 'admin') return;
+            
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            try {
+                const atividade = JSON.parse(e.dataTransfer.getData('application/json'));
+                const tarefasContainer = e.currentTarget;
+                
+                if (tarefasContainer.querySelector('.folga-text')) {
+                    return;
+                }
+                
+                const addButton = tarefasContainer.querySelector('.add-tarefa');
+                const isEspecial = atividade.categoria === 'especial';
+                const novaTarefa = criarTarefaElement(atividade.nome, atividade.emoji, isEspecial);
+                
+                if (addButton) {
+                    tarefasContainer.insertBefore(novaTarefa, addButton);
+                } else {
+                    tarefasContainer.appendChild(novaTarefa);
+                }
+                
+                atualizarEstatisticas();
+                salvarDados();
+            } catch (error) {
+                console.error('Erro ao processar drop:', error);
+            }
+        }
+
+        function addTarefa(button) {
+            if (userType !== 'admin') return;
+            
+            const tarefasContainer = button.parentNode;
+            const novaTarefa = criarTarefaElement('Nova tarefa', '📝');
+            
+            tarefasContainer.insertBefore(novaTarefa, button);
+            atualizarEstatisticas();
+            salvarDados();
+        }
+
+        function editTarefa(element) {
+            if (userType !== 'admin' || !isEditMode) return;
+            
+            const textoSpan = element.querySelector('.tarefa-texto');
+            const currentText = textoSpan.textContent;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentText;
+            input.style.cssText = 'border: 2px solid #e91e63; background: white; padding: 5px; border-radius: 4px; width: 100%;';
+            
+            textoSpan.innerHTML = '';
+            textoSpan.appendChild(input);
+            
+            input.focus();
+            input.select();
+            
+            input.onblur = function() {
+                const novoTexto = input.value.trim() || currentText;
+                textoSpan.textContent = novoTexto;
+                
+                // Salvar na biblioteca se for uma nova tarefa
+                if (novoTexto !== currentText && novoTexto !== 'Nova tarefa') {
+                    salvarTarefaNaBiblioteca(novoTexto);
+                }
+                
+                salvarDados();
+            };
+            
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    input.blur();
+                } else if (e.key === 'Escape') {
+                    textoSpan.textContent = currentText;
+                }
+            };
+        }
+
+        // =================== EVENTOS E INICIALIZAÇÃO ===================
+
+        // Eventos de drag and drop
+        document.addEventListener('dragend', function(e) {
+            if (e.target.classList.contains('atividade-biblioteca')) {
+                e.target.style.opacity = '1';
+            }
+        });
+
+        // Atalhos de teclado (apenas para admin)
+        document.addEventListener('keydown', function(e) {
+            if (userType !== 'admin') return;
+            
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'e':
+                        e.preventDefault();
+                        toggleEditMode();
+                        break;
+                    case 'b':
+                        e.preventDefault();
+                        toggleSidebar();
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        window.print();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        recriarCronograma();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        salvarDados();
+                        mostrarAlertaSucesso('💾 Dados salvos manualmente!');
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && sidebar.classList.contains('active')) {
+                    toggleSidebar();
+                }
+            }
+        });
+
+        // Auto-salvamento periódico
+        setInterval(() => {
+            if (userType) {
+                salvarDados();
+            }
+        }, 30000); // Salvar a cada 30 segundos
+
+        // Salvamento antes de sair da página
+        window.addEventListener('beforeunload', function(e) {
+            if (userType) {
+                salvarDados();
+            }
+        });
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sistema de cronograma carregado. Aguardando login...');
+            
+            // Listener para Enter na criação de atividades
+            const inputNome = document.getElementById('novaAtividadeNome');
+            if (inputNome) {
+                inputNome.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && userType === 'admin') {
+                        adicionarAtividade();
+                    }
+                });
+                
+                // Auto-sugestões baseadas no que o usuário digita
+                inputNome.addEventListener('input', function(e) {
+                    const valor = e.target.value.toLowerCase();
+                    const emojiInput = document.getElementById('novaAtividadeEmoji');
+                    const categoriaSelect = document.getElementById('novaAtividadeCategoria');
+                    
+                    // Auto-sugestões inteligentes
+                    if (valor.includes('limpar') || valor.includes('lavar')) {
+                        emojiInput.value = '🧹';
+                        categoriaSelect.value = 'limpeza';
+                    } else if (valor.includes('preparar') || valor.includes('cortar') || valor.includes('frutas')) {
+                        emojiInput.value = '🍓';
+                        categoriaSelect.value = 'preparo';
+                    } else if (valor.includes('verificar') || valor.includes('conferir') || valor.includes('temperatura')) {
+                        emojiInput.value = '❄️';
+                        categoriaSelect.value = 'verificacao';
+                    } else if (valor.includes('organizar') || valor.includes('estoque')) {
+                        emojiInput.value = '📦';
+                        categoriaSelect.value = 'organizacao';
+                    } else if (valor.includes('creme') || valor.includes('açaí') || valor.includes('sorvete')) {
+                        emojiInput.value = '🍦';
+                        categoriaSelect.value = 'especial';
+                    } else if (valor.includes('lista') || valor.includes('cardápio')) {
+                        emojiInput.value = '📝';
+                        categoriaSelect.value = 'administrativo';
+                    }
+                });
+            }
+
+            // Status inicial
+            setTimeout(() => {
+                mostrarStatusSalvamento('saved');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
